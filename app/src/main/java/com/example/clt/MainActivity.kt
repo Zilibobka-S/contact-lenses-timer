@@ -11,11 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -40,8 +46,9 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.Center
                     ) {
+
                         Greeting(
-                            name = "блядота "
+
 
                         )
                     }
@@ -52,7 +59,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(modifier: Modifier = Modifier) {
+
+        var bla by remember { mutableStateOf("жопа") }
+        Button(
+            onClick = { bla = "bladota" },
+
+            content = {
+                Text("негры")
+            }
+        )
+
+
+
+
+
     Surface (
         modifier = Modifier
             .width(500.dp),
@@ -63,7 +84,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
     {
         Text(
-            text = "поплачь, $name",
+            text = "поплачь, $bla",
             modifier = Modifier
                 .padding(50.dp),
 
@@ -73,13 +94,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     ContactLensesTimerTheme {
         Greeting("Anus")
     }
 }
-
+*/
 val String.blues
     get() = Color(parseColor(this))
+
+
+
