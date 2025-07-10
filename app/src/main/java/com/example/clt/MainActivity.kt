@@ -1,7 +1,12 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.clt
 
+
+import android.content.Context
 import android.graphics.Color.parseColor
 import android.os.Bundle
+import android.preference.PreferenceDataStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,8 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,15 +31,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.clt.ui.theme.ContactLensesTimerTheme
+import java.util.prefs.Preferences
 
+val Context.dataStore by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             ContactLensesTimerTheme {
                 Scaffold(
@@ -46,11 +54,9 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.Center
                     ) {
+                        Entrance()
+                        Greeting()
 
-                        Greeting(
-
-
-                        )
                     }
                 }
             }
@@ -58,22 +64,25 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
-
-        var bla by remember { mutableStateOf("жопа") }
-        Button(
-            onClick = { bla = "bladota" },
-
-            content = {
-                Text("негры")
+fun Greeting() {
+    var state = 0
+    var bla by remember { mutableStateOf("жопа") }
+    Button(
+        onClick = {
+            if (state == 0) {
+                state = state + 1
+                bla = "bladota"
+            } else {
+                bla = "блядота"
+                state = 0
             }
-        )
-
-
-
-
-
+        },
+        content = {
+            Text("негры")
+        }
+    )
     Surface (
         modifier = Modifier
             .width(500.dp),
@@ -93,15 +102,24 @@ fun Greeting(modifier: Modifier = Modifier) {
         )
     }
 }
-
-/*@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    ContactLensesTimerTheme {
-        Greeting("Anus")
+fun Entrance() {
+    var dstate by remember { mutableStateOf(0) }
+    if (dstate == 0){
+        AlertDialog( onDismissRequest = {},
+            title = { Text(text = "Warning! You will see this dialog once!")},
+            text = { Text("This app is provided  \'as is\' without any warranties or guarantees. The developer does not take any responsibility for vision or eye health issues, or any other medical conditions related to the use of this app. This application is intended only as a personal reminder tool and does not replace professional medical advice. Please consult with an eye care professional before making any decisions regarding your contact lenses. Use this app at your own risk. The developer is also not liable for any bugs or malfunctions in the application.") },
+            confirmButton = {
+                Button(onClick = {dstate = 1}){ Text("Ok")}
+
+            }
+        )
+
+
+
     }
 }
-*/
+
 val String.blues
     get() = Color(parseColor(this))
 
