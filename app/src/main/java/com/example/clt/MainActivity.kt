@@ -2,6 +2,7 @@
 
 package com.example.clt
 
+import androidx.datastore.preferences.core.*
 
 import android.content.Context
 import android.graphics.Color.parseColor
@@ -26,17 +27,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.clt.ui.theme.ContactLensesTimerTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.prefs.Preferences
+import android.R.attr.value
+import androidx.compose.runtime.LaunchedEffect
 
 val Context.dataStore by preferencesDataStore(name = "settings")
-
+val DSTATE_KEY = intPreferencesKey("dstate")
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +65,7 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.Center
                     ) {
-                        Entrance()
+                        Entrance(context = LocalContext.current)
                         Greeting()
 
                     }
@@ -64,6 +75,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//этот код это [CENSORED] очень интересное чтиво, мои соболезнования читающему
 
 @Composable
 fun Greeting() {
@@ -103,14 +115,23 @@ fun Greeting() {
     }
 }
 @Composable
-fun Entrance() {
+fun Entrance(context: Context) {
+    val scope = rememberCoroutineScope()
     var dstate by remember { mutableStateOf(0) }
+    LaunchedEffect(Unit) {
+        val prefs = context.dataStore.data.first()
+        dstate = prefs[DSTATE_KEY] ?: 0
+    }
+
+
     if (dstate == 0){
         AlertDialog( onDismissRequest = {},
             title = { Text(text = "Warning! You will see this dialog once!")},
             text = { Text("This app is provided  \'as is\' without any warranties or guarantees. The developer does not take any responsibility for vision or eye health issues, or any other medical conditions related to the use of this app. This application is intended only as a personal reminder tool and does not replace professional medical advice. Please consult with an eye care professional before making any decisions regarding your contact lenses. Use this app at your own risk. The developer is also not liable for any bugs or malfunctions in the application.") },
             confirmButton = {
-                Button(onClick = {dstate = 1}){ Text("Ok")}
+                Button(onClick = { scope.launch {
+                    saveDState(context, 1)}; dstate = 1
+                }){ Text("Ok")}
 
             }
         )
@@ -123,5 +144,6 @@ fun Entrance() {
 val String.blues
     get() = Color(parseColor(this))
 
-
-
+suspend fun saveDState(context: Context, value: Int){
+    context.dataStore.edit {it[DSTATE_KEY] = value}
+}
